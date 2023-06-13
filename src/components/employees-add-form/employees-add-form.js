@@ -7,7 +7,7 @@ class EmployeesAddForm extends Component {
         super(props);
         this.state = {
             name: '',
-            salary: ''
+            salary: '',
         }
     }
 
@@ -28,7 +28,7 @@ class EmployeesAddForm extends Component {
                     className="add-form d-flex"
                     onSubmit = {onAdd}>
                     <input type="text"
-                        className="form-control new-post-label"
+                        className="form-control new-post-label "
                         placeholder="Как его зовут?"
                         name="name"
                         value={name}

@@ -30,52 +30,63 @@ class App extends Component {
     add = (e) => {
         e.preventDefault();
         const { name, salary } = e.target;
-        const newElement = {
-            name: name.value,
-            salary: salary.value,
-            increase: false,
-            like: false,
-            id: this.state.data.length + 1
+
+        if (name.value === '' || salary.value === '') {
+            name.classList.add('error');
+            salary.classList.add('error');
+            return;
+        } else {
+            name.classList.remove('error');
+            salary.classList.remove('error');
+
+            const newElement = {
+                name: name.value,
+                salary: salary.value,
+                increase: false,
+                like: false,
+                id: this.state.data.length + 1
+            }
+
+            this.setState(({ data }) => ({
+                data: data.reduce((newData, currentEl) => {
+
+                    newData.unshift(currentEl);
+                    return newData;
+                }, [newElement])
+            }))
         }
 
+
+    }
+
+    // onToggleIncrease = (id) => {
+    //     this.setState(({data}) => ({
+    //         data :  data.map(item => {
+    //               if(item.id === id ){
+    //                   return {...item, increase: !item.increase}
+    //               }
+    //               return item;
+    //           })
+    //       }))
+
+    //     // this.setState(({ data }) => {
+    //     //     const index = data.findIndex(elem => elem.id === id);
+
+    //     //     const old = data[index];
+    //     //     const newItem = {...old, increase: !old.increase};
+    //     //     const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)];
+
+    //     //     return {
+    //     //         data: newArr
+    //     //     }
+    //     // } более длинный но тоже раьочий спотоб как изменить свойство инкрис
+    // }
+
+    onToggleProp = (id, prop) => {
         this.setState(({ data }) => ({
-            data: data.reduce((newData, currentEl) => {
-
-                newData.unshift(currentEl);
-                return newData;
-            }, [newElement])
-        }))
-
-    }
-
-    onToggleIncrease = (id) => {
-        this.setState(({data}) => ({
-            data :  data.map(item => {
-                  if(item.id === id ){
-                      return {...item, increase: !item.increase}
-                  }
-                  return item;
-              })
-          }))
-
-        // this.setState(({ data }) => {
-        //     const index = data.findIndex(elem => elem.id === id);
-
-        //     const old = data[index];
-        //     const newItem = {...old, increase: !old.increase};
-        //     const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)];
-
-        //     return {
-        //         data: newArr
-        //     }
-        // } более длинный но тоже раьочий спотоб как изменить свойство инкрис
-    }
-
-    onToggleLike = (id) => {
-        this.setState(({data}) => ({
             data: data.map(item => {
                 if (item.id === id) {
-                    return {...item, like: !item.like}
+                    return { ...item, [prop]: !item[prop] }
                 }
                 return item;
             })
@@ -91,8 +102,8 @@ class App extends Component {
         return (
             <div className="app">
                 <AppInfo
-                employeesCount = {employeesCount}
-                increaseCount = {increaseCount} />
+                    employeesCount={employeesCount}
+                    increaseCount={increaseCount} />
 
                 <div className="search-panel">
                     <SearchPanel />
@@ -102,8 +113,9 @@ class App extends Component {
                 <EmployeesList
                     serverData={data}
                     onToggleIncrease={this.onToggleIncrease}
-                    onToggleLike={this.onToggleLike}
-                    onDeleteItem={this.deleteItem} />
+                    onToggleProp={this.onToggleProp}
+                    onDeleteItem={this.deleteItem}
+                />
 
                 <EmployeesAddForm
                     onAdd={this.add} />
