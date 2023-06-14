@@ -17,14 +17,19 @@ class App extends Component {
                 { name: "Zahar Kh.", salary: 1010, increase: false, like: true, id: 1 },
                 { name: "Roma Ly.", salary: 10, increase: false, like: false, id: 2 },
                 { name: "Misha Kh.", salary: 1009, increase: true, like: false, id: 3 },
-            ]
+            ],
+            term: '',
+            filter: 'salaryFilter'
         }
     }
 
     deleteItem = (id) => {
-        this.setState(({ data }) => ({
-            data: data.filter(item => item.id !== id)
-        }))
+        this.setState(({ data }) => {
+            const newData = data.filter(item => item.id !== id);
+            return {
+                data: newData,
+            }
+        })
     }
 
     add = (e) => {
@@ -47,40 +52,16 @@ class App extends Component {
                 id: this.state.data.length + 1
             }
 
-            this.setState(({ data }) => ({
-                data: data.reduce((newData, currentEl) => {
+            this.setState(({ data }) => {
+                const newData = [newElement, ...data];
 
-                    newData.unshift(currentEl);
-                    return newData;
-                }, [newElement])
-            }))
+                return {
+                    data: newData,
+                }
+            })
         }
 
-
     }
-
-    // onToggleIncrease = (id) => {
-    //     this.setState(({data}) => ({
-    //         data :  data.map(item => {
-    //               if(item.id === id ){
-    //                   return {...item, increase: !item.increase}
-    //               }
-    //               return item;
-    //           })
-    //       }))
-
-    //     // this.setState(({ data }) => {
-    //     //     const index = data.findIndex(elem => elem.id === id);
-
-    //     //     const old = data[index];
-    //     //     const newItem = {...old, increase: !old.increase};
-    //     //     const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)];
-
-    //     //     return {
-    //     //         data: newArr
-    //     //     }
-    //     // } более длинный но тоже раьочий спотоб как изменить свойство инкрис
-    // }
 
     onToggleProp = (id, prop) => {
         this.setState(({ data }) => ({
@@ -93,11 +74,41 @@ class App extends Component {
         }))
     }
 
+    search = (term, items) => {
+        if (term.length === 0) return items
+
+        return items.filter(item => {
+            return item.name.indexOf(term) > -1
+        })
+
+    }
+
+    onUpdateSearch = (term) => {
+        this.setState({ term: term });
+    }
+
+    filterPost = (items, filter) => {
+        switch (filter) {
+            case 'likeFilter':
+                return items.filter(item => item.like === true);
+            case 'salaryFilter':
+                return items.filter(item => item.salary > 1000);
+            default:
+                return items
+        }
+    }
+
+    onUpdateFilter = (filter) => {
+        this.setState({ filter: filter })
+    }
+
     render() {
-        const { data } = this.state;
+        const { data, term, filter } = this.state;
 
         const employeesCount = data.length;
         const increaseCount = data.filter(item => item.increase === true).length;
+
+        const visibleData = this.filterPost(this.search(term, data), filter);
 
         return (
             <div className="app">
@@ -106,12 +117,16 @@ class App extends Component {
                     increaseCount={increaseCount} />
 
                 <div className="search-panel">
-                    <SearchPanel />
-                    <AppFilter />
+                    <SearchPanel onUpdateSearch={this.onUpdateSearch} />
+
+                    <AppFilter
+                        filter={filter}
+                        onUpdateFilter={this.onUpdateFilter}
+                    />
                 </div>
 
                 <EmployeesList
-                    serverData={data}
+                    serverData={visibleData}
                     onToggleIncrease={this.onToggleIncrease}
                     onToggleProp={this.onToggleProp}
                     onDeleteItem={this.deleteItem}
