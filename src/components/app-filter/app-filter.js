@@ -6,9 +6,9 @@ const AppFilter = (props) => {
     const { filter, onUpdateFilter} = props;
 
     const buttonsData = [
-        { name: 'all', label: 'Все сотрудники' },
-        { name: 'likeFilter', label: 'На повышение' },
-        { name: 'salaryFilter', label: 'З/П больше 1000$' }
+        { name: 'all', label: 'All employees' },
+        { name: 'likeFilter', label: 'Up for promotion' },
+        { name: 'salaryFilter', label: 'Salary more than $1000' }
     ];
 
     const buttons = buttonsData.map(({ name, label }) => {
